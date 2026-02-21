@@ -19,10 +19,10 @@
     </defs>
       <g id="page" transform="translate(42,45)">
         <g transform="translate(15,-40)">
-          <rect x="-3" y="-3" width="60" height="30" fill="#FFFFFF" stroke="#000" stroke-width="3" rx="5" ry="5"/>
-          <text class="txt h2" x="4" y="18">(0,0)</text>
+          <rect x="0" y="0" width="60" height="30" fill="#FFFFFF" stroke="#000" stroke-width="3" rx="5" ry="5"/>
+          <text class="txt h2" x="7" y="21">(0,0)</text>
         </g>
-        <rect x="-3" y="-3" width="315.81" height="351.46" fill="#FFFFFF" stroke="#000" stroke-width="5"/>
+        <rect x="-2" y="-2" width="313.81" height="349.46" fill="#FFFFFF" stroke="#000" stroke-width="5"/>
         <use href="#dawfont-inter-black__safe__10-uc-H__u0048" x="0" y="0" width="309.81" height="345.46" fill="#000"/>
         <rect x="-3" y="273" width="75" height="75" stroke="#FFF" fill="none" stroke-width="3" stroke-dasharray="15 8"/>
         <!-- connector line (from window to inset) -->
@@ -42,7 +42,7 @@
           <rect class="pill" x="24" y="344" width="170" height="38" rx="18" ry="18"/>
           <text class="txt" x="45" y="369">View at Full Scale</text>
         </g>
-        <g transform="translate(0,0)">
+        <g transform="translate(-1,-1)">
           <use href="#xhair_big"/>
         </g>
       </g>

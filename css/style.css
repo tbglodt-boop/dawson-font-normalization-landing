@@ -33,6 +33,7 @@ h4 { font-size:16px; font-weight:600; margin:12px 0 6px; }
 p { margin:0 0 12px; }
 .subhead { font-size:18px; font-weight:600; margin:0; }
 .small { font-size:13px; font-weight:500; color:var(--muted); }
+.small_trust { font-size:13px; font-weight:500; color:#FFFFFF; }
 .microtrust { font-size:13px; font-weight:500; color:var(--muted); margin-top:12px; }
 
 /* ===== NAV (single source of truth) ===== */
@@ -57,7 +58,7 @@ p { margin:0 0 12px; }
 }
 
 /* ===== Buttons / Pills ===== */
-.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; border:2px solid #111; background:#EAEAEA; font-weight:600; text-decoration:none; }
+.btn { display:inline-flex; align-items:center; justify-content:center; color:#4A5468; gap:8px; padding:12px 16px; border-radius:12px; border:2px solid #111; background:#EAEAEA; font-weight:600; text-decoration:none; }
 .btn:hover { text-decoration:none; filter:brightness(1.03); }
 .btn-dark { background:var(--brand); color:#fff; }
 .pill { display:inline-flex; align-items:center; justify-content:center; padding:8px 14px; border-radius:999px; border:2px solid #111; background:#fff; font-size:14px; font-weight:500; text-decoration:none; }
@@ -137,6 +138,11 @@ p { margin:0 0 12px; }
 .accordion summary::after { content:"+"; position:absolute; right:14px; top:50%; transform:translateY(-50%); font-weight:700; }
 .accordion details[open] summary::after { content:"−"; }
 .accordion-body { padding:14px; color:var(--ink); background:#fff; }
+.accordion-body ol,
+.accordion-body ul {
+  margin: 0 0 1rem 0;
+  padding-left: 1rem;
+}
 .split { display:grid; grid-template-columns:1fr; gap:10px; }
 @media (min-width: 900px) { .split { grid-template-columns:1fr 1fr 1fr; } }
 

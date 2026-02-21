@@ -207,7 +207,26 @@
                 <details>
                   <summary>Why Lowercase Isn’t Tight-Bounded Like Uppercase</summary>
                   <div class="accordion-body">
-                    <p>Lowercase is baseline-baked so mixed-case layout works without runtime offsets. Tight lowercase bounds look “clean” at export time but force baseline math later.</p>
+                    <p><strong>Because tight lowercase bounds create runtime baseline math.</strong></p>              
+                    <p>Tight lowercase bounds mean:</p>
+                    <ul>
+                      <li>different symbol heights</li>
+                      <li>required Y-axis adjustments</li>
+                      <li>context-dependent placement logic</li>
+                    </ul>              
+                    <p>
+                      If each lowercase glyph has a different top boundary,
+                      layout systems must calculate offsets at runtime to align them.
+                    </p>             
+                    <p>We bake baseline alignment into the export so that:</p>
+                    <ul>
+                      <li>all glyphs share a consistent vertical reference</li>
+                      <li>no Y-offset calculation is required</li>
+                      <li>mixed-case alignment works immediately</li>
+                    </ul>             
+                    <p>
+                      The geometry is corrected once — during export — instead of repeatedly at runtime.
+                    </p>      
                   </div>
                 </details>
 
@@ -250,7 +269,7 @@
                   <div>+ SAFE_Master_Defs.svg</div>
                 </div>
                 <a class="btn" href="#">Buy / Start</a>
-                <div class="small soft">Secure checkout. One-time $50 fee. No subscription required.</div>
+                <div class="small_trust soft">Secure checkout. One-time $50 fee. No subscription required.</div>
               </div>
 
               <div class="card">
@@ -372,8 +391,152 @@
 
           <div class="accordion">
             <details>
+              <summary>Why not have lowercase glyphs start at (0,0) like uppercase?</summary>
+              <div class="accordion-body">
+                <p><strong>Because tight lowercase bounds create runtime baseline math.</strong></p>              
+                <p>Tight lowercase bounds mean:</p>
+                <ul>
+                  <li>different symbol heights</li>
+                  <li>required Y-axis adjustments</li>
+                  <li>context-dependent placement logic</li>
+                </ul>              
+                <p>
+                  If each lowercase glyph has a different top boundary,
+                  layout systems must calculate offsets at runtime to align them.
+                </p>             
+                <p>We bake baseline alignment into the export so that:</p>
+                <ul>
+                  <li>all glyphs share a consistent vertical reference</li>
+                  <li>no Y-offset calculation is required</li>
+                  <li>mixed-case alignment works immediately</li>
+                </ul>             
+                <p>
+                  The geometry is corrected once — during export — instead of repeatedly at runtime.
+                </p>      
+              </div>
+            </details>
+          
+            <details>
               <summary>How is this different from a free TTF → SVG converter?</summary>
-              <div class="accordion-body"><p>Free converters export. Dawson normalizes: deterministic bounds, (0,0), baseline-baked, SAFE padding, DECK tiling, manifest + proof pages.</p></div>
+              <div class="accordion-body">
+                <p><strong>Most “TTF → SVG converters” do not output engineered geometry.</strong> They output a <em>typesetting artifact</em>.</p>
+                <p>What you usually get is an <strong>SVG font container</strong> (old SVG Fonts spec):</p>
+<pre><code>&lt;svg&gt;
+  &lt;defs&gt;
+    &lt;font&gt;
+      &lt;font-face /&gt;
+      &lt;missing-glyph /&gt;
+      &lt;glyph /&gt;
+      &lt;glyph /&gt;
+        ...
+      &lt;hkern /&gt;
+    &lt;/font&gt;
+  &lt;/defs&gt;
+&lt;/svg&gt;</code></pre>
+                <p>
+                  That means it’s <strong>not</strong> “one glyph = one SVG asset,” and it’s not immediately usable as a
+                  <code>&lt;defs&gt;</code> library of symbols. You’re expected to think like a font parser.
+                </p>
+                <hr>
+                <ol>
+                  <li>
+                    <p><strong>SVG font format is a dead end for many engines</strong></p>
+                    <p>
+                      The <code>&lt;font&gt;</code>/<code>&lt;glyph&gt;</code>/<code>&lt;hkern&gt;</code> model is the legacy SVG Fonts spec and is
+                      widely unsupported in modern renderers and tooling. Many consumers only support normal SVG geometry
+                      (<code>&lt;path&gt;</code>, <code>&lt;g&gt;</code>, <code>&lt;symbol&gt;</code>, etc.), not embedded font tables.
+                    </p>
+                    <p><strong>Result:</strong> you still end up writing extraction logic to reconstruct glyph assets.</p>
+                  </li>
+                  <li>
+                    <p><strong>Monolithic output (bloat + terrible diffability)</strong></p>
+                    <p>
+                      Typical exports dump <em>everything</em> into one file: thousands of glyph nodes plus kerning tables.
+                      This is hostile to version control diffs, caching, partial updates, and “only ship what I need” workflows.
+                    </p>
+                    <p><strong>Dawson approach:</strong> per-glyph assets with deterministic naming and deterministic ordering.</p>
+                  </li>
+                  <li>
+                    <p><strong>The coordinate system is typesetting-first, not geometry-first</strong></p>
+                    <p>
+                      Fonts commonly include negative descents and global bounding boxes that span negative space.
+                      Baseline behavior is implied by font metrics, not baked into the geometry.
+                    </p>
+                    <p><strong>Engineering pain:</strong> if you’re not running a full typesetter, you now own baseline alignment and normalization.</p>
+                    <p><strong>Dawson approach:</strong> baseline baked (for lowercase), intentional origin choice, and non-negative coordinate space in outputs.</p>
+                  </li>
+                  <li>
+                    <p><strong>Global bbox metadata is not a trustworthy placement box</strong></p>
+                    <p>
+                      A single extreme glyph (arrows, math symbols, emoji, etc.) can include coordinates far outside the
+                      font’s stated bbox. That poisons bbox assumptions and makes glyphs look like tiny specks floating
+                      in a massive empty viewBox (“glyph in no man’s land”).
+                    </p>
+                    <p><strong>Dawson approach:</strong> each glyph gets an explicit per-glyph viewBox derived from its actual bounds (CORE/SAFE/DECK rules).</p>
+                  </li>
+                  <li>
+                    <p><strong>No per-glyph viewBox (so you can’t trust the canvas)</strong></p>
+                    <p>
+                      In SVG font exports, <code>&lt;glyph&gt;</code> usually provides a path <code>d</code> and maybe Unicode/advance width,
+                      but there’s no per-glyph viewBox. So every downstream consumer must compute bounds, choose padding,
+                      and author a viewBox anyway.
+                    </p>
+                    <p><strong>Dawson approach:</strong> every glyph ships as a <code>&lt;symbol&gt;</code> with a deterministic viewBox (and SAFE padding when needed).</p>
+                  </li>
+                  <li>
+                    <p><strong>Advance width leaks typesetting concepts into geometry workflows</strong></p>
+                    <p>
+                      Advance width is a font layout concept, not a geometry bounds concept. If you use it as width, your boxes are wrong.
+                      If you ignore it, text spacing logic breaks. Either way, it’s a distraction when your goal is reusable geometry.
+                    </p>
+                    <p><strong>Dawson approach:</strong> geometry bounds are explicit; any metrics live in sidecar metadata (manifest) you can use or ignore.</p>
+                  </li>
+                  <li>
+                    <p><strong>Unicode lookup becomes a “wasted afternoon” problem</strong></p>
+                    <p>
+                      Glyph naming is inconsistent (<code>A</code> vs <code>uni27FA</code> vs <code>rightLongArrow2</code>), some glyphs have no Unicode,
+                      and coverage ranges can be huge. Extracting “the glyph I want” becomes a hunt.
+                    </p>
+                    <p><strong>Dawson approach:</strong> deterministic IDs that encode font identity + set + tag + Unicode in a consistent, searchable way.</p>
+                  </li>
+                  <li>
+                    <p><strong>Kerning tables dumped into the same asset (no modularity)</strong></p>
+                    <p>
+                      Many converters include kerning tables in the same file. If you don’t need kerning (common in CAD/icon/procedural use),
+                      you still pay file size and parse cost. If you do need kerning, you must implement the behavior.
+                    </p>
+                    <p><strong>Dawson approach:</strong> geometry outputs are clean and paintless; metrics live in explicit sidecar data.</p>
+                  </li>
+                  <li>
+                    <p><strong>Legacy wrappers and DTD noise</strong></p>
+                    <p>
+                      Some exports include old SVG 1.1 DOCTYPE/DTD declarations. In hardened environments, external DTDs can be blocked.
+                      Best case it’s noise; worst case it’s a parsing snag.
+                    </p>
+                    <p><strong>Dawson approach:</strong> minimal, modern SVG meant to be consumed as data assets.</p>
+                  </li>
+                </ol>  
+                <hr>
+                <h4>The bottom line</h4>
+                <p><strong>Traditional converters output typesetting artifacts.</strong></p>
+                <ul>
+                  <li>monolithic SVG font containers</li>
+                  <li>baseline implied, not baked</li>
+                  <li>negative coordinate space and bbox confusion</li>
+                  <li>no per-glyph viewBox</li>
+                  <li>mixed naming and Unicode hunting</li>
+                  <li>kerning dumps</li>
+                </ul>
+                <p><strong>Dawson outputs engineered geometry assets.</strong></p>
+                <ul>
+                  <li>one glyph = one <code>&lt;symbol&gt;</code> asset</li>
+                  <li>deterministic IDs and deterministic ordering</li>
+                  <li>explicit per-glyph viewBox (CORE/SAFE/DECK)</li>
+                  <li>SAFE padding designed to survive real renderers</li>
+                  <li>baseline baked where it matters (lowercase)</li>
+                  <li>manifest + logs for auditability</li>
+                </ul>
+              </div>
             </details>
 
             <details>
@@ -382,18 +545,301 @@
             </details>
 
             <details>
-              <summary>Why 6 safe units?</summary>
-              <div class="accordion-body"><p>Because it survives real-world rounding and rasterization where smaller values can fail.</p></div>
+              <summary>Why 6 safe units of padding?</summary>
+              <div class="accordion-body">
+              <p><strong>Because 2 units is theoretically sufficient and 6 units is operationally reliable.</strong></p>        
+              <h3>What is a “Safe Unit”?</h3>
+              <p>
+                A Safe Unit is padding added to the exported SVG symbol’s bounding box.
+              </p>
+              <p>It does not alter glyph geometry.  
+                 It does not affect kerning.  
+                 It does not change advance width.
+              </p>
+              <p>
+                It prevents edge clipping and renderer rounding artifacts.
+              </p>          
+              <h3>Why isn’t 2 units enough?</h3>         
+              <p>Most modern fonts use:</p>
+              <ul>
+                <li><strong>UPM = 2048 units</strong></li>
+              </ul>    
+              <p>With that grid:</p>
+              <ul>
+                <li>2 units = 0.097% of em</li>
+                <li>At 100px render size ≈ 0.097 pixels</li>
+              </ul>          
+              <p>
+                That is below the threshold of many rasterization rounding behaviors.
+              </p>        
+              <p>In real-world rendering, this can fail under:</p>
+              <ul>
+                <li>browser subpixel rounding</li>
+                <li>GPU antialiasing</li>
+                <li>stroke expansion</li>
+                <li>CSS transforms</li>
+                <li><code>&lt;use&gt;</code> instancing</li>
+                <li>viewBox scaling</li>
+                <li>fractional layout math</li>
+              </ul>        
+              <p>
+                2 units works in controlled math.  
+                It does not always survive uncontrolled rendering environments.
+              </p>          
+              <h3>Why 6 units?</h3>         
+              <p>6 units = 0.293% of em.</p>
+              <p>Still extremely small.</p>       
+              <p>But it:</p>
+              <ul>
+                <li>survives subpixel rounding</li>
+                <li>provides margin for stroke expansion</li>
+                <li>prevents tight-bound clipping</li>
+                <li>holds up under browser inconsistencies</li>
+                <li>remains visually negligible</li>
+              </ul>        
+              <p>
+                6 units is the smallest value that consistently behaves well across renderers.
+              </p>       
+              <h3>Does 6 units change layout?</h3>      
+              <p>No.</p>
+              <p>Padding exists inside the SVG <code>viewBox</code> only.</p>      
+              <p>It does not modify:</p>
+              <ul>
+                <li>advance width</li>
+                <li>kerning</li>
+                <li>glyph proportions</li>
+                <li>baseline math</li>
+              </ul>
+              <p>
+                It simply ensures the glyph does not sit on the bounding edge.
+              </p>       
+              <h3>Why not 8 or 12?</h3>       
+              <p>You could.</p>      
+              <p>
+                We tested lower values to determine the minimum safe margin.
+              </p>         
+              <p>6 units is:</p>
+              <ul>
+                <li>conservative</li>
+                <li>minimal</li>
+                <li>stable</li>
+                <li>not wasteful</li>
+              </ul>       
+              <p>
+                Higher values add safety but are unnecessary for typical workflows.
+              </p>       
+            </div>
             </details>
 
             <details>
               <summary>Why use &lt;symbol&gt; instead of &lt;g&gt; or plain paths?</summary>
-              <div class="accordion-body"><p>&lt;symbol&gt; is a reusable viewport. It’s the cleanest way to instance geometry via &lt;use&gt; without transforms or contextual scaling math.</p></div>
+              <div class="accordion-body">
+                <p>Dawson exports glyphs as <code>&lt;symbol&gt;</code> elements on purpose.</p>
+                <p>This is not stylistic. It is architectural.</p>
+                <p>
+                  If you are building deterministic SVG systems, icon libraries, or layout engines,
+                  <code>&lt;symbol&gt;</code> is the correct container for reusable vector geometry.
+                </p>
+                <p>Here is why:</p> 
+                <ol>
+                  <li>
+                    <p><strong><code>&lt;symbol&gt;</code> is a viewport — <code>&lt;g&gt;</code> is not.</strong></p>
+                    <p><code>&lt;symbol&gt;</code> supports its own <code>viewBox</code> — <code>&lt;g&gt;</code> does not.</p>
+                    <p>That single difference matters enormously.</p>
+                    <p>A <code>&lt;symbol&gt;</code> defines:</p>
+                    <ul>
+                      <li>its own coordinate system</li>
+                      <li>its own bounds</li>
+                      <li>its own origin</li>
+                      <li>its own scaling behavior when instantiated with <code>&lt;use&gt;</code></li>
+                    </ul>
+                    <p>
+                      A <code>&lt;g&gt;</code> is just a grouping container.
+                      It inherits whatever coordinate system it happens to be placed into.
+                    </p>
+                    <p>Dawson glyphs are engineered so that:</p>
+                    <ul>
+                      <li>(0,0) is deterministic</li>
+                      <li>bounds are baked</li>
+                      <li>SAFE padding is intentional</li>
+                      <li>DECK boxes are shared and centered</li>
+                    </ul>
+                    <p>That only works cleanly when each glyph has its own <code>viewBox</code>.</p>
+                    <p>That means <code>&lt;symbol&gt;</code>.</p>
+                  </li>
+                  <li>
+                    <p><strong><code>&lt;symbol&gt;</code> + <code>&lt;use&gt;</code> = instanceable geometry</strong></p>
+                    <p>The purpose of this export system is reuse. When you use:</p>
+<pre><code>&lt;use href="#glyph-id" width="..." height="..." /&gt;</code></pre>
+                    <p>You are instancing a defined viewport. This provides:</p>
+                    <ul>
+                      <li>clean scaling</li>
+                      <li>clean positioning</li>
+                      <li>no geometry duplication</li>
+                      <li>reduced DOM weight</li>
+                      <li>centralized definitions in <code>&lt;defs&gt;</code></li>
+                    </ul>
+                    <p>That is how production icon systems are structured.</p>
+                    <p>
+                      A <code>&lt;g id="..."&gt;</code> does not scale with <code>width</code>/<code>height</code>.
+                      You would have to apply transforms manually.
+                      That reintroduces runtime math — which this system is explicitly designed to eliminate.
+                    </p>
+                  </li>
+                  <li>
+                    <p><strong>Deterministic layout requires encapsulation</strong></p>
+                    <p>Dawson glyphs bake:</p>
+                    <ul>
+                      <li>baseline alignment</li>
+                      <li>Y-axis inversion</li>
+                      <li>SAFE padding</li>
+                      <li>centered DECK layout</li>
+                    </ul>
+                    <p>All of that is geometry-level logic.</p>
+                    <p>
+                      <code>&lt;symbol&gt;</code> allows each glyph to be a fully self-contained unit.
+                      Drop it anywhere. Scale it. Instance it. It behaves the same every time.
+                    </p>
+                    <p>
+                      A <code>&lt;path id="..."&gt;</code> inside a random SVG does not guarantee that.
+                      Encapsulation is the point.
+                    </p>
+                  </li>
+                  <li>
+                    <p><strong>This is not a font replacement — it’s a geometry system</strong></p>
+                    <p>Traditional font glyphs are:</p>
+                    <ul>
+                      <li>dependent on font metrics</li>
+                      <li>dependent on runtime baseline logic</li>
+                      <li>dependent on layout engines</li>
+                      <li>subject to hinting and rasterization quirks</li>
+                    </ul>
+                    <p>Dawson exports are:</p>
+                    <ul>
+                      <li>pure vector geometry</li>
+                      <li>metric-independent</li>
+                      <li>baseline-baked</li>
+                      <li>renderer-neutral</li>
+                    </ul>
+                    <p>
+                      You are not relying on the browser’s font engine.
+                      You are working directly with geometry.
+                    </p>
+                    <p><code>&lt;symbol&gt;</code> is the correct container for that model.</p>
+                  </li>
+                  <li>
+                    <p><strong>Why not just use <code>&lt;g id&gt;</code>?</strong></p>
+                    <p>Because <code>&lt;g&gt;</code>:</p>
+                    <ul>
+                      <li>has no <code>viewBox</code></li>
+                      <li>has no intrinsic <code>width</code>/<code>height</code></li>
+                      <li>requires transforms for scaling</li>
+                      <li>makes layout math dependent on context</li>
+                    </ul>
+                    <p>That defeats the purpose of deterministic exports.</p>
+                    <p>You would be reintroducing the very runtime math the system removes.</p>
+                  </li>
+                  <li>
+                    <p><strong>Can you convert to <code>&lt;g id&gt;</code> or anything else?</strong></p>
+                    <p>Yes. Easily. The path data is already fully baked.</p>
+                    <p>Every exported file contains:</p>
+<pre><code>&lt;symbol id="..." viewBox="0 0 W H"&gt;
+  &lt;path d="..." /&gt;
+&lt;/symbol&gt;</code></pre>
+                    <p>If you prefer:</p>
+                    <ul>
+                      <li><code>&lt;g id="..."&gt;</code></li>
+                      <li><code>&lt;path id="..."&gt;</code></li>
+                      <li>inline geometry</li>
+                      <li>React components</li>
+                      <li>CAD ingestion</li>
+                      <li>game engine ingestion</li>
+                      <li>custom wrappers</li>
+                    </ul>
+                    <p>You simply change the wrapper.</p>
+                    <p>Example conversion:</p>
+                    <p>From:</p>
+<pre><code>&lt;symbol id="glyph" viewBox="0 0 W H"&gt;
+  &lt;path d="..." /&gt;
+&lt;/symbol&gt;</code></pre>
+                    <p>To:</p>
+<pre><code>&lt;g id="glyph"&gt;
+  &lt;path d="..." /&gt;
+&lt;/g&gt;</code></pre>
+                    <p>
+                      The geometry does not change, because the coordinates are already baked.
+                      There are no transforms, no paint attributes, and no runtime offsets.
+                      The wrapper is just a container.
+                    </p>
+                  </li>
+                  <li>
+                    <p><strong>Why <code>&lt;symbol&gt;</code> is the most neutral choice</strong></p>
+                    <p><code>&lt;symbol&gt;</code> gives you:</p>
+                    <ul>
+                      <li>isolation</li>
+                      <li>reusability</li>
+                      <li>clean instancing</li>
+                      <li>scalable viewport logic</li>
+                      <li>industry-standard SVG semantics</li>
+                    </ul>
+                    <p>
+                      It is the most structurally correct reusable vector container in SVG.
+                      It does not lock you into anything.
+                      It does not obscure geometry.
+                      It does not add transforms.
+                      It simply defines a reusable viewport.
+                    </p>
+                    <p>That is why Dawson uses it.</p>
+                  </li>
+                </ol>
+                <h3>Summary</h3>
+                <p>We use <code>&lt;symbol&gt;</code> because:</p>
+                <ul>
+                  <li>it provides a deterministic viewport</li>
+                  <li>it supports clean instancing with <code>&lt;use&gt;</code></li>
+                  <li>it prevents context-dependent scaling math</li>
+                  <li>it aligns with modern SVG icon system architecture</li>
+                  <li>it keeps glyph geometry self-contained</li>
+                </ul>
+                <p><strong>And if you ever need something else?</strong></p>
+                <p>Change the wrapper. The geometry is already correct.</p>
+              </div>
             </details>
 
             <details>
               <summary>Can I convert the output to a different format?</summary>
-              <div class="accordion-body"><p>Yes. The geometry is baked. Wrappers can be changed for your pipeline (g/path wrappers, React components, etc.).</p></div>
+              <div class="accordion-body">
+                <p>Yes. Easily. The path data is already fully baked.</p>
+                <p>Every exported file contains:</p>
+<pre><code>&lt;symbol id="..." viewBox="0 0 W H"&gt;
+  &lt;path d="..." /&gt;
+&lt;/symbol&gt;</code></pre>
+                <p>If you prefer:</p>
+                <ul>
+                  <li><code>&lt;g id="..."&gt;</code></li>
+                  <li><code>&lt;path id="..."&gt;</code></li>
+                  <li>inline geometry</li>
+                  <li>React components</li>
+                  <li>CAD ingestion</li>
+                  <li>game engine ingestion</li>
+                  <li>custom wrappers</li>
+                </ul>
+                <p>You simply change the wrapper.</p>
+                <p>Example conversion:</p>
+                <p>From:</p>
+<pre><code>&lt;symbol id="glyph" viewBox="0 0 W H"&gt;
+  &lt;path d="..." /&gt;
+&lt;/symbol&gt;</code></pre>
+                <p>To:</p>
+<pre><code>&lt;g id="glyph"&gt;
+  &lt;path d="..." /&gt;
+&lt;/g&gt;</code></pre>
+                <p>
+                  The geometry does not change, because the coordinates are already baked.
+                  There are no transforms, no paint attributes, and no runtime offsets.
+                  The wrapper is just a container.
+                </p>
+              </div>
             </details>
           </div>
 
