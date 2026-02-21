@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="420"
+     viewBox="0 0 1200 420">
+
+  <defs>
+    <style>
+      .bg { fill:#EEF1F4; }
+      .card { fill:#FFFFFF; stroke:#111; stroke-width:2; }
+      .title { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; font-size: 20px; fill:#111; font-weight: 700; }
+      .sub { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; font-size: 14px; fill:#444; }
+      .label { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; font-size: 13px; fill:#111; }
+      .hot { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; font-size: 13px; fill:#E85C3A; font-weight: 700; }
+      .guide { stroke:#888; stroke-width:12; }
+      .adv { stroke:#DDD; stroke-width:12; }
+      .edge { stroke:#111; stroke-width:12; }
+      .frame { fill:none; stroke:#111; stroke-width:10; }
+      .soft { fill:#F7F8FA; }
+    </style>
+
+    <!-- =========================
+         INPUTS (hardcoded here)
+         Converter font metrics:
+           ascent = 1638
+           descent = -410
+           em height = 2048
+         Converter glyph 'j':
+           horiz-adv-x = 588
+           path d = (below)
+         DawFont SAFE symbol for 'j':
+           viewBox = 0 0 591 1980
+           path d = (below)
+         ========================= -->
+
+    <!-- DawFont SAFE j (your output) -->
+    <symbol id="SAFE_j" viewBox="0 0 591 1980">
+      <path d="M179.0 472.0H580.0V1594.0Q580.0 1730.0 527.0 1813.5Q474.0 1897.0 373.0 1935.5Q272.0 1974.0 128.0 1974.0H6.0V1674.0H68.0Q130.0 1674.0 154.5 1649.5Q179.0 1625.0 179.0 1569.0ZM379.0 383.0Q290.0 383.0 231.0 329.0Q172.0 275.0 172.0 194.0Q172.0 113.0 231.0 59.5Q290.0 6.0 378.0 6.0Q467.0 6.0 526.0 59.5Q585.0 113.0 585.0 194.0Q585.0 275.0 526.0 329.0Q467.0 383.0 379.0 383.0Z"
+            fill="#111"/>
+    </symbol>
+  </defs>
+
+  <!-- Background -->
+  <rect class="bg" x="0" y="0" width="1200" height="420"/>
+
+  <!-- Cards -->
+  <rect class="card" x="40"  y="40" width="540" height="340" rx="18"/>
+  <rect class="card" x="620" y="40" width="540" height="340" rx="18"/>
+
+  <!-- Headings -->
+  <text class="title" x="60" y="78">BEFORE — TTF→SVG Converter</text>
+  <text class="sub"   x="60" y="100">Outlines trapped in font metrics (advance width + em box)</text>
+
+  <text class="title" x="640" y="78">AFTER — DawFont SAFE</text>
+  <text class="sub"   x="640" y="100">Reusable geometry: per-glyph viewBox + (0,0) + safe padding</text>
+
+  <!-- =========================================================
+       LEFT CARD (BEFORE)
+       We show the converter glyph inside its font frame:
+         viewBox = 0 0 588 2048
+       and we intentionally render it into a “demo viewport”
+       that can clip (overflow hidden).
+       ========================================================= -->
+
+  <!-- Demo viewport box (visual) -->
+  <rect class="soft" x="60" y="120" width="500" height="240" rx="14"/>
+
+  <!-- Left: nested viewport that CLIPS like normal embedding -->
+  <svg x="60" y="120" width="500" height="240"
+       viewBox="0 0 588 2048"
+       preserveAspectRatio="xMidYMid meet"
+       overflow="hidden">
+
+    <!-- Show the actual font frame -->
+    <rect x="0" y="0" width="588" height="2048" fill="#FF0000"/>
+
+    <!-- Guides: baseline, left edge, advance edge -->
+    <line class="guide" x1="0" y1="1638" x2="588" y2="1638"/>
+    <line class="edge"  x1="0" y1="0"    x2="0"   y2="2048"/>
+    <line class="adv"   x1="588" y1="0"  x2="588" y2="2048"/>
+
+    <!-- Origin marker at (0, baseline) -->
+    <circle cx="0" cy="1638" r="36" fill="#E85C3A"/>
+
+    <!-- Converter glyph (font-space -> SVG-space) -->
+    <g transform="translate(0,1638) scale(1,-1)">
+      <path d="M94 1084h401v-1122q0 -136 -53 -219.5t-154 -122t-245 -38.5h-122v300h62q62 0 86.5 24.5t24.5 80.5v1097zM294 1173q-89 0 -148 54t-59 135t59 134.5t147 53.5q89 0 148 -53.5t59 -134.5t-59 -135t-147 -54z"
+            fill="#111"/>
+    </g>
+  </svg>
+
+  <!-- Left labels (big, readable) -->
+  <text class="label" x="76" y="355">frame: adv=588 × em=2048</text>
+  <text class="hot"   x="300" y="355">can clip in normal viewports</text>
+
+  <!-- =========================================================
+       RIGHT CARD (AFTER)
+       We show your SAFE symbol in its own per-glyph viewBox.
+       We make (0,0) visible and we show the viewBox frame.
+       ========================================================= -->
+
+  <rect class="soft" x="640" y="120" width="500" height="240" rx="14"/>
+
+  <!-- Right: nested viewport for SAFE symbol -->
+  <svg x="640" y="120" width="500" height="240"
+       viewBox="0 0 591 1980"
+       preserveAspectRatio="xMidYMid meet"
+       overflow="hidden">
+
+    <!-- Background -->
+    <rect x="0" y="0" width="591" height="1980" fill="#FFFFFF"/>
+
+    <!-- ViewBox frame -->
+    <rect class="frame" x="0" y="0" width="591" height="1980"/>
+
+    <!-- (0,0) marker -->
+    <line x1="0" y1="0" x2="140" y2="0" stroke="#111" stroke-width="12"/>
+    <line x1="0" y1="0" x2="0" y2="140" stroke="#111" stroke-width="12"/>
+    <circle cx="0" cy="0" r="34" fill="#E85C3A"/>
+
+    <!-- SAFE glyph -->
+    <use href="#SAFE_j"/>
+  </svg>
+
+  <text class="label" x="656" y="355">frame: viewBox="0 0 591 1980"</text>
+  <text class="hot"   x="920" y="355">(0,0) is literal + SAFE padding</text>
+
+</svg>

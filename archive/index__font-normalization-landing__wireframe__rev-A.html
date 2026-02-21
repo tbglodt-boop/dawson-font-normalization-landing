@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Font Normalization Pass — Wireframe</title>
+  <style>
+    /* ====== Wireframe baseline ====== */
+    :root{
+      --bg: #f6f6f6;
+      --paper: #ffffff;
+      --ink: #111;
+      --muted: #e9e9e9;
+
+      --container: 1100px;
+      --gutter: 1rem;
+
+      --space: clamp(16px, 2vw, 28px);
+      --space-lg: clamp(24px, 3vw, 44px);
+
+      --h1: clamp(30px, 4vw, 48px);
+      --h2: clamp(22px, 2.6vw, 32px);
+      --body: clamp(16px, 1.2vw, 18px);
+      --small: 14px;
+
+      --r: 16px;
+      --b: 2px solid var(--ink);
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: var(--body);
+      line-height: 1.5;
+    }
+
+    .container{
+      width: min(var(--container), 100% - (var(--gutter) * 2));
+      margin-inline: auto;
+      padding-block: var(--space-lg);
+    }
+
+    .section{
+      background: var(--paper);
+      border: var(--b);
+      border-radius: var(--r);
+      padding: var(--space);
+      margin-block: var(--space);
+    }
+
+    /* Wireframe blocks */
+    .wf-block{
+      background: var(--muted);
+      border: var(--b);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .wf-line{
+      height: 14px;
+      background: var(--muted);
+      border: var(--b);
+      border-radius: 10px;
+    }
+    .wf-line.sm{ height: 12px; }
+    .wf-line.lg{ height: 18px; }
+    .wf-stack{ display: grid; gap: 10px; }
+
+    /* Headings */
+    h1{
+      font-size: var(--h1);
+      line-height: 1.1;
+      margin: 0 0 10px 0;
+    }
+    h2{
+      font-size: var(--h2);
+      line-height: 1.2;
+      margin: 0 0 10px 0;
+    }
+    .kicker{
+      font-size: var(--small);
+      opacity: 0.85;
+      margin: 0 0 8px 0;
+    }
+
+    /* Nav */
+    .nav{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .nav .logo{
+      width: 180px;
+      height: 36px;
+    }
+    .nav .links{
+      display: none; /* shown on desktop breakpoint */
+      gap: 12px;
+      align-items: center;
+    }
+    .chip{
+      height: 32px;
+      padding: 0 12px;
+      border: var(--b);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      background: var(--paper);
+      font-size: var(--small);
+    }
+
+    /* Buttons (wireframe) */
+    .btn{
+      height: 48px;
+      padding: 0 16px;
+      border: var(--b);
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      background: var(--muted);
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn.primary{ background: #dcdcdc; }
+    .btn-row{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    /* Hero */
+    .hero{
+      display: grid;
+      gap: var(--space);
+    }
+    .hero .right{
+      min-height: 260px;
+    }
+
+    .trust-row{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    /* What you get */
+    .what-grid{
+      display: grid;
+      gap: var(--space);
+    }
+
+    /* How it works */
+    .cards{
+      display: grid;
+      gap: var(--space);
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* auto responsive */
+      margin-top: 12px;
+    }
+    .card{
+      border: var(--b);
+      border-radius: var(--r);
+      padding: 14px;
+      background: var(--paper);
+      display: grid;
+      gap: 10px;
+      min-height: 180px;
+    }
+
+    /* Examples */
+    .two-up{
+      display: grid;
+      gap: var(--space);
+      grid-template-columns: 1fr;
+      margin-top: 12px;
+    }
+
+    /* FAQ */
+    .faq{
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .faq .q{
+      border: var(--b);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--muted);
+      font-weight: 700;
+    }
+
+    /* Footer */
+    .footer{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ====== One breakpoint (tablet/desktop) ====== */
+    @media (min-width: 768px){
+      .hero{
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: start;
+      }
+      .what-grid{
+        grid-template-columns: 1.4fr 0.6fr;
+        align-items: start;
+      }
+      .two-up{
+        grid-template-columns: 1fr 1fr;
+      }
+      .nav .links{ display: flex; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <!-- 01) NAV -->
+    <header class="section">
+      <div class="nav">
+        <div class="wf-block logo" aria-label="Logo / Wordmark"></div>
+        <nav class="links" aria-label="Primary">
+          <span class="chip">Examples</span>
+          <span class="chip">FAQ</span>
+          <span class="chip">Contact</span>
+        </nav>
+      </div>
+    </header>
+
+    <!-- 02) HERO -->
+    <section class="section">
+      <p class="kicker">Hero</p>
+      <div class="hero">
+        <div class="left">
+          <h1>Font Normalization Pass (Wireframe Headline)</h1>
+          <div class="wf-stack" aria-hidden="true">
+            <div class="wf-line"></div>
+            <div class="wf-line"></div>
+            <div class="wf-line" style="width: 80%;"></div>
+          </div>
+
+          <div class="btn-row">
+            <a class="btn primary" href="#buy">Primary CTA</a>
+            <a class="btn" href="#examples">Secondary CTA</a>
+          </div>
+
+          <div class="trust-row" aria-label="Trust chips">
+            <span class="chip">Turnaround</span>
+            <span class="chip">Outputs</span>
+            <span class="chip">Refund terms</span>
+          </div>
+        </div>
+
+        <div class="right wf-block" id="hero-proof" aria-label="Hero example image or sample sheet placeholder">
+          <strong>Example / Proof block</strong>
+          <div class="wf-stack" style="margin-top: 12px;">
+            <div class="wf-line lg"></div>
+            <div class="wf-line"></div>
+            <div class="wf-line sm" style="width: 70%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03) WHAT YOU GET -->
+    <section class="section" id="buy">
+      <p class="kicker">What you get</p>
+      <div class="what-grid">
+        <div>
+          <h2>Concrete deliverables</h2>
+          <div class="wf-stack" aria-hidden="true">
+            <div class="wf-line"></div>
+            <div class="wf-line" style="width: 92%;"></div>
+            <div class="wf-line" style="width: 88%;"></div>
+            <div class="wf-line" style="width: 95%;"></div>
+            <div class="wf-line" style="width: 82%;"></div>
+          </div>
+          <p class="kicker" style="margin-top: 12px;">(Formats, naming guarantees, constraints, simple “what I need from you”)</p>
+        </div>
+
+        <aside class="wf-block" aria-label="Price + quick buy block">
+          <h2 style="margin-top:0;">$50 pass</h2>
+          <a class="btn primary" href="#contact" style="width: 100%;">Buy / Start</a>
+          <div class="wf-stack" style="margin-top: 12px;" aria-hidden="true">
+            <div class="wf-line sm"></div>
+            <div class="wf-line sm" style="width: 85%;"></div>
+          </div>
+          <p class="kicker" style="margin-top: 12px;">Small trust copy</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 04) HOW IT WORKS -->
+    <section class="section">
+      <p class="kicker">How it works</p>
+      <h2>Pay → Upload → Deliver</h2>
+
+      <div class="cards">
+        <div class="card">
+          <strong>1) Input</strong>
+          <div class="wf-stack" aria-hidden="true">
+            <div class="wf-line sm"></div>
+            <div class="wf-line sm" style="width: 80%;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <strong>2) Normalize</strong>
+          <div class="wf-stack" aria-hidden="true">
+            <div class="wf-line sm"></div>
+            <div class="wf-line sm" style="width: 80%;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <strong>3) Deliver</strong>
+          <div class="wf-stack" aria-hidden="true">
+            <div class="wf-line sm"></div>
+            <div class="wf-line sm" style="width: 80%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <a class="btn primary" href="#buy">Start now</a>
+      </div>
+    </section>
+
+    <!-- 05) EXAMPLES -->
+    <section class="section" id="examples">
+      <p class="kicker">Examples</p>
+      <h2>Before / After</h2>
+
+      <div class="two-up">
+        <div class="wf-block" aria-label="Before example">Before placeholder</div>
+        <div class="wf-block" aria-label="After example">After placeholder</div>
+      </div>
+
+      <div class="btn-row">
+        <a class="btn" href="#download">Download sample</a>
+      </div>
+    </section>
+
+    <!-- 06) FAQ -->
+    <section class="section" id="faq">
+      <p class="kicker">FAQ</p>
+      <h2>Answers to objections</h2>
+      <div class="faq" role="list">
+        <div class="q" role="listitem">Q1 — What files do you need from me?</div>
+        <div class="q" role="listitem">Q2 — What do I get back (formats/naming)?</div>
+        <div class="q" role="listitem">Q3 — Turnaround time?</div>
+        <div class="q" role="listitem">Q4 — Licensing / rights / what you store?</div>
+        <div class="q" role="listitem">Q5 — Refunds / if it fails?</div>
+      </div>
+    </section>
+
+    <!-- 07) FINAL CTA -->
+    <section class="section" id="contact">
+      <p class="kicker">Final CTA</p>
+      <h2>Ready to run a pass?</h2>
+      <div class="wf-stack" aria-hidden="true">
+        <div class="wf-line"></div>
+        <div class="wf-line" style="width: 88%;"></div>
+      </div>
+
+      <div class="btn-row">
+        <a class="btn primary" href="#buy">Buy / Start</a>
+        <a class="btn" href="mailto:you@example.com">Email instead</a>
+      </div>
+    </section>
+
+    <!-- 08) FOOTER -->
+    <footer class="section">
+      <div class="footer">
+        <div>
+          <strong>Footer</strong>
+          <div class="kicker">Contact • Terms/Refund • Copyright • Small “about” line</div>
+        </div>
+        <a class="btn" href="mailto:you@example.com">Email / Link</a>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

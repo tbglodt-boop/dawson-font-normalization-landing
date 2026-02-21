@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
+
+<metadata><![CDATA[
+
+**********************************
+CONFIDENTIAL / PROPRIETARY NOTICE:
+**********************************
+DATE CREATED: 12/25/2025 04:42 PM
+
+This SVG, its structure, layout logic, styles, terminology, and embedded notes are confidential and proprietary.
+
+All intellectual property rights are reserved by Travis Blair Glodt. No license is granted by possession or viewing.
+
+Any unauthorized use, disclosure, copying, redistribution, reverse engineering, or derivative work is prohibited.
+
+This file may contain private notes and is not intended for sharing or public distribution.
+
+==================================
+PURPOSE:
+==================================
+This file is an example of the output of the font normalization pipeline for the DAWFONT POS website.
+
+==================================
+QUESTIONS / NOTES (WORKING)
+==================================
+DATE/TIME: 02/18/2026 4:57 PM PST
+CONTEXT: Can you Help with the Math
+
+----------------------------------
+NOTES (PRE): Here is the actual Math.  What I did for simplicity sake for the web layout is I used the samve viewbox and width and height of the generic font export, 900:900.  I then took the symbol and did 50% of the viewbox in the glyph that is provided in the python pipeline.  So the bounding stroked box is mathematically correct and is in line with what an engineer would actually get.  All the math worked out perfectly.  You can look at the crosshair and the transform translate numbers.  They fall on the top left edge just based on where the glyph lands at perfect middle.  I want to put in what you are suggesting . . . the extra label.  I am just not as good as all this viewbox stuff and zooming in and out arbitrarily.  I already have this plugged into the HTML so I just change this file and hit refresh and I can see the changes.
+
+----------------------------------
+QUESTIONS:
+Q1.  Can you help me with the math doing what you are suggesting?  
+
+----------------------------------
+NOTES (POST):
+Feel Free to shoot me an example.
+
+Thank You
+----------------------------------
+STATUS:
+- Active: Active
+- Resolved: N/A
+- Parked: N/A
+- Reopen Gate: Open
+
+==================================
+END QUESTIONS / NOTES
+==================================
+
+==================================
+BLUE PRINTS:
+==================================
+Document Dimensions: 900:900
+Viewbox: 900:900
+Width: 900
+Height: 900
+
+Header: 0:0
+Body: 900:900
+Footer: 0:0
+
+**********************************
+]]></metadata>
+
+<defs>
+<symbol id="dawfont-inter-black__safe__10-uc-R__u0052" viewBox="0 0 1265 1502"><path d="M6.0 1496.0V6.0H643.0Q816.0 6.0 943.5 68.0Q1071.0 130.0 1141.0 245.5Q1211.0 361.0 1211.0 520.0Q1211.0 677.0 1138.5 788.5Q1066.0 900.0 934.5 959.0Q803.0 1018.0 625.0 1018.0H257.0V700.0H583.0Q650.0 700.0 698.0 679.0Q746.0 658.0 772.0 618.0Q798.0 578.0 798.0 520.0Q798.0 461.0 772.0 420.5Q746.0 380.0 698.0 359.0Q650.0 338.0 583.0 338.0H417.0V1496.0ZM823.0 1496.0 481.0 816.0H908.0L1259.0 1496.0Z"/></symbol>
+
+<g id="xhair_big">
+  <line x1="-40" y1="0" x2="40" y2="0" stroke="#E85C3A" stroke-width="3"/>
+  <line x1="0" y1="-40" x2="0" y2="40" stroke="#E85C3A" stroke-width="3"/>
+  <circle cx="0" cy="0" r="15" fill="none" stroke="#E85C3A" stroke-width="3"/>
+  <circle cx="0" cy="0" r="3" fill="#E85C3A"/>
+</g>
+
+<style>
+#Document { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+.pill { fill:#fff; stroke:#111; stroke-width:2; }
+.txt  { fill:#111; font-size:24px; font-weight:500; }
+.h2   { fill:#111; font-size:24px; font-weight:600; }
+.muted { fill:#666; }
+</style>
+
+<!-- Clip the Entire Drawing (Document Group Only) -->
+<clipPath id="clipPaper">
+<rect x="0" y="0" width="900" height="900"/>
+</clipPath>
+</defs>
+
+<rect x="0" y="0" width="900" height="900" fill="#FFF"/>
+
+<!-- ========================= -->
+<!-- DOCUMENT OPEN =========== -->
+<!-- ========================= -->
+<g id="Document" transform="translate(0,0)" clip-path="url(#clipPaper)">
+
+  <!-- ======================== -->
+  <!-- HEADER OPEN ============ -->
+  <!-- ======================== -->
+  <g id="Header" transform="translate(0,0)">
+    <rect class="header" x="0" y="0" width="0" height="0"/>
+    <g id="Header_content" transform="translate(0,0)">
+    <g transform="translate(150,20)">
+      <rect class="pill" x="0" y="0" width="200" height="44" rx="10" ry="10"/>
+      <text class="txt" x="25" y="30" fill="#E85C3A">Origin: (0,0)</text>
+    </g>
+    </g>
+  </g>
+  <!-- ======================== -->
+  <!-- HEADER CLOSE =========== -->
+  <!-- ======================== -->
+
+  <!-- ======================== -->
+  <!-- BODY OPEN ============== -->
+  <!-- ======================== -->
+  <g id="Body" transform="translate(133.75,74.5)">
+    <rect class="body" x="0" y="0" width="632.5" height="751" fill="#FFFFFF" stroke="#000" stroke-width="3"/>
+    <g id="Body_content" transform="translate(0,0)">
+      <!-- 1265 1502 .5 -->
+      <use href="#dawfont-inter-black__safe__10-uc-R__u0052" width="632.5" height="751"/>
+    </g>
+  </g>
+
+  <!-- ========================= -->
+  <!-- BODY CLOSE ============== -->
+  <!-- ========================= -->
+
+  <!-- ========================= -->
+  <!-- FOOTER OPEN ============= -->
+  <!-- ========================= -->
+  <g id="Footer" transform="translate(0,0)">
+    <rect class="footer" x="0" y="0" width="0" height="0"/>
+    <g id="Footer_content" transform="translate(133.75,74.5)">
+      <use href="#xhair_big"/>
+    </g>
+  </g>
+  <!-- ========================= -->
+  <!-- FOOTER CLOSE ============ -->
+  <!-- ========================= -->
+
+</g>
+<!-- ========================= -->
+<!-- DOCUMENT END ============ -->
+<!-- ========================= -->
+</svg>
